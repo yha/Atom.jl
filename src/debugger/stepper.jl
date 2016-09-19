@@ -105,6 +105,21 @@ handle("stepexpr") do
   end
 end
 
+bps = Dict()
+
+handle("togglebp") do file, line
+  global bps
+  k = hash((file, line))
+
+  if haskey(bps, k)
+    thebp = bps[k]
+    Gallium.disable(thebp)
+    delete!(bps, k)
+  else
+    bps[k] = Gallium.breakpoint(file, line)
+  end
+end
+
 contexts(i::Interpreter = interp) =
   reverse!([d(:context => i.linfo.def.name, :items => context(i)) for i in i.stack])
 
